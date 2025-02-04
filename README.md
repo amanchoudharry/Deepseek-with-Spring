@@ -1,74 +1,111 @@
-# Ollama Spring Boot Project
+# Ollama AI Backend
 
-## Introduction
-This project integrates Ollama and DeepSeek with a Spring Boot backend. It provides functionality for AI model inference using locally installed DeepSeek models.
-
----
+This project provides an AI-powered backend service using **Spring Boot, Ollama, and DeepSeek** for processing and streaming AI-generated responses.
 
 ## Prerequisites
-Ensure that you have the following installed on your system:
 
-### 1. Install Ollama
-Ollama is required to run the models locally. You can install it by following the instructions below:
+Ensure you have **Java 17+** installed on your system.
 
-#### **For Linux & Mac:**
-```sh
-curl -fsSL https://ollama.com/install.sh | sh
-```
+### Install Ollama Locally
 
-#### **For Windows:**
-Download and install Ollama from [Ollama's official website](https://ollama.com/).
+1. Download and install Ollama from the official site:  
+   [https://ollama.com/download](https://ollama.com/download)
+2. Start Ollama:
+   ```sh
+   ollama serve
+   ```
 
-Verify installation by running:
-```sh
-ollama --version
-```
+### Install DeepSeek Locally
 
-### 2. Install DeepSeek Locally
-DeepSeek is an AI model used in this project. You can install it using Ollama:
-
-```sh
-ollama pull deepseek with_model_version
-```
-
-Ensure it is installed by running:
-```sh
-ollama list
-```
-You should see `deepseek` in the list of installed models.
-
----
+1. Install DeepSeek:
+   ```sh
+   ollama pull deepseek
+   ```
+2. Run DeepSeek:
+   ```sh
+   ollama run deepseek 
+   ```
 
 ## Configuration
-The model used in this application can be modified in the `application.properties` file.
 
-### Change DeepSeek Model
-Locate the following property inside `src/main/resources/application.properties`:
+### Change DeepSeek Model in `application.properties`
+
+You can modify the **DeepSeek model** used by updating the following property in `src/main/resources/application.properties`:
 
 ```properties
-ollama.model=deepseek
+ai.model=deepseek-large
 ```
-
-To use a different model, replace `deepseek` with your desired model name. Example:
+Replace `deepseek-large` with your preferred model version, such as:
 ```properties
-ollama.model=deepseek-coder
+ai.model=deepseek-medium
 ```
 
----
+## API Endpoints
+
+The backend provides two endpoints to interact with the AI service:
+
+### 1. Ask AI (Synchronous)
+
+**Endpoint:** `GET /api/v1/ai`
+
+- **Description:** Sends a query to the AI and receives a synchronous response.
+- **Parameters:**
+  - `query` (optional, string) - The question to ask the AI.
+- **Response:** A single AI-generated text response.
+
+#### Postman Example:
+
+**Request:**
+```
+GET http://localhost:8080/api/v1/ai?query=Hello AI, how can you help me?
+```
+
+**Response:**
+```json
+{
+    "response": "Hello! I can assist you with a variety of tasks, including answering questions, providing recommendations, and much more."
+}
+```
+
+### 2. Stream AI (Asynchronous Response)
+
+**Endpoint:** `GET /api/v1/ai/stream`
+
+- **Description:** Streams AI responses asynchronously using `Flux<String>`.
+- **Parameters:**
+  - `query` (optional, string) - The question to ask the AI.
+- **Response:** A continuous stream of AI-generated text.
+
+#### Postman Example:
+
+**Request:**
+```
+GET http://localhost:8080/api/v1/ai/stream?query=Tell me a story.
+```
+
+**Response:** (Streaming JSON lines)
+```jsonl
+"Once upon a time, in a distant kingdom..."
+"there lived a wise old owl who..."
+"helped villagers solve their problems."
+```
 
 ## Running the Application
-After setting up Ollama and DeepSeek, you can start the Spring Boot application using:
 
-```sh
-mvn spring-boot:run
-```
+1. Clone the repository:
+   ```sh
+   git clone [https://github.com/your-repo/ollama-ai-backend.git](https://github.com/amanchoudharry/Deepseek-with-Spring.git)
+   cd ollama-ai-backend
+   ```
+2. Build and run the project:
+   ```sh
+   mvn spring-boot:run
+   ```
 
----
+The service will start at `http://localhost:8080`.
 
-## Troubleshooting
-- Ensure Ollama is running in the background before starting the application.
-- If you get an error related to DeepSeek, confirm that it is installed correctly using `ollama list`.
-- Check the logs for specific errors and update the `application.properties` file accordingly.
+## Testing with Postman
 
----
-
+- Open **Postman** or any REST client.
+- Use **GET** requests to test endpoints as described above.
+- For streaming, enable **"Stream mode"** in Postman.
